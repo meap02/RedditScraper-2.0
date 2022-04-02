@@ -31,7 +31,13 @@ def collectUser(user_string: str,
                 search_subs: bool,
                 location: str,
                 collection):
-    user = user_exists(user_string)
+    try:
+        user = user_exists(user_string)
+    except praw.exceptions.MissingRequiredAttributeException as e:
+        print("The praw.ini file is invalid")
+        yield("The praw.ini file is invalid,"
+              + "please configure the file and restart the application")
+        return
     if user is not None:
         print("Collecting "
               + str(grab_limit)

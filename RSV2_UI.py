@@ -15,8 +15,7 @@ class Ui_main_win(object):
     def setupUi(self, main_win):
         main_win.setObjectName("main_win")
         main_win.resize(1000, 600)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(main_win.sizePolicy().hasHeightForWidth())
@@ -25,12 +24,10 @@ class Ui_main_win(object):
         main_win.setMaximumSize(QtCore.QSize(1000, 600))
         main_win.setTabShape(QtWidgets.QTabWidget.Rounded)
         self.centralwidget = QtWidgets.QWidget(main_win)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.centralwidget.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
         self.centralwidget.setSizePolicy(sizePolicy)
         self.centralwidget.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.centralwidget.setObjectName("centralwidget")
@@ -48,8 +45,7 @@ class Ui_main_win(object):
         self.Title.setObjectName("Title")
         self.log = QtWidgets.QTextBrowser(self.centralwidget)
         self.log.setGeometry(QtCore.QRect(50, 300, 901, 191))
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.log.sizePolicy().hasHeightForWidth())
@@ -57,8 +53,7 @@ class Ui_main_win(object):
         font = QtGui.QFont()
         font.setFamily("Consolas")
         self.log.setFont(font)
-        self.log.setSizeAdjustPolicy(
-            QtWidgets.QAbstractScrollArea.AdjustIgnored)
+        self.log.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustIgnored)
         self.log.setLineWrapMode(QtWidgets.QTextEdit.NoWrap)
         self.log.setObjectName("log")
         self.saving_progressBar = QtWidgets.QProgressBar(self.centralwidget)
@@ -72,16 +67,13 @@ class Ui_main_win(object):
         self.layoutWidget.setGeometry(QtCore.QRect(10, 80, 961, 211))
         self.layoutWidget.setObjectName("layoutWidget")
         self.button_grid = QtWidgets.QGridLayout(self.layoutWidget)
-        self.button_grid.setSizeConstraint(
-            QtWidgets.QLayout.SetDefaultConstraint)
+        self.button_grid.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
         self.button_grid.setContentsMargins(0, 0, 0, 0)
         self.button_grid.setObjectName("button_grid")
-        spacerItem = QtWidgets.QSpacerItem(
-            375, 20, QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(375, 20, QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Minimum)
         self.button_grid.addItem(spacerItem, 3, 0, 1, 1)
         self.fetch_spinBox = QtWidgets.QSpinBox(self.layoutWidget)
-        self.fetch_spinBox.setButtonSymbols(
-            QtWidgets.QAbstractSpinBox.PlusMinus)
+        self.fetch_spinBox.setButtonSymbols(QtWidgets.QAbstractSpinBox.PlusMinus)
         self.fetch_spinBox.setMinimum(1)
         self.fetch_spinBox.setMaximum(1000)
         self.fetch_spinBox.setObjectName("fetch_spinBox")
@@ -89,19 +81,16 @@ class Ui_main_win(object):
         self.collectBtn = QtWidgets.QPushButton(self.layoutWidget)
         self.collectBtn.setObjectName("collectBtn")
         self.button_grid.addWidget(self.collectBtn, 7, 3, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.button_grid.addItem(spacerItem1, 5, 4, 1, 1)
         self.fetch_label = QtWidgets.QLabel(self.layoutWidget)
         self.fetch_label.setObjectName("fetch_label")
         self.button_grid.addWidget(self.fetch_label, 6, 2, 1, 1)
         self.redditor = QtWidgets.QTextEdit(self.layoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.redditor.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.redditor.sizePolicy().hasHeightForWidth())
         self.redditor.setSizePolicy(sizePolicy)
         self.redditor.setMaximumSize(QtCore.QSize(350, 23))
         self.redditor.setAcceptDrops(True)
@@ -114,19 +103,16 @@ class Ui_main_win(object):
         self.redditor_label.setObjectName("redditor_label")
         self.button_grid.addWidget(self.redditor_label, 2, 2, 1, 1)
         self.install_location_label = QtWidgets.QLabel(self.layoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.install_location_label.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.install_location_label.sizePolicy().hasHeightForWidth())
         self.install_location_label.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setPointSize(6)
         font.setItalic(True)
         self.install_location_label.setFont(font)
-        self.install_location_label.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.install_location_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.install_location_label.setIndent(-20)
         self.install_location_label.setObjectName("install_location_label")
         self.button_grid.addWidget(self.install_location_label, 1, 4, 1, 1)
@@ -158,16 +144,17 @@ class Ui_main_win(object):
         self.statusbar.setObjectName("statusbar")
         main_win.setStatusBar(self.statusbar)
         self.actionChange_Install_Location = QtWidgets.QAction(main_win)
-        self.actionChange_Install_Location.setObjectName(
-            "actionChange_Install_Location")
+        self.actionChange_Install_Location.setObjectName("actionChange_Install_Location")
         self.actionDelete_User_Data = QtWidgets.QAction(main_win)
         self.actionDelete_User_Data.setObjectName("actionDelete_User_Data")
         self.actionOpen_User = QtWidgets.QAction(main_win)
         self.actionOpen_User.setObjectName("actionOpen_User")
         self.actionAdd_Taks_to_Windows_Scheduler = QtWidgets.QAction(main_win)
-        self.actionAdd_Taks_to_Windows_Scheduler.setObjectName(
-            "actionAdd_Taks_to_Windows_Scheduler")
+        self.actionAdd_Taks_to_Windows_Scheduler.setObjectName("actionAdd_Taks_to_Windows_Scheduler")
+        self.actionChange_Reddit_Token_Credentials = QtWidgets.QAction(main_win)
+        self.actionChange_Reddit_Token_Credentials.setObjectName("actionChange_Reddit_Token_Credentials")
         self.menuFile.addAction(self.actionChange_Install_Location)
+        self.menuFile.addAction(self.actionChange_Reddit_Token_Credentials)
         self.menuFile.addAction(self.actionAdd_Taks_to_Windows_Scheduler)
         self.menuEdit.addAction(self.actionDelete_User_Data)
         self.menuView.addAction(self.actionOpen_User)
@@ -176,34 +163,27 @@ class Ui_main_win(object):
         self.menubar.addAction(self.menuView.menuAction())
 
         self.retranslateUi(main_win)
-        self.fetchMax_checkBox.toggled['bool'].connect(
-            self.fetch_spinBox.setDisabled)  # type: ignore
+        self.fetchMax_checkBox.toggled['bool'].connect(self.fetch_spinBox.setDisabled) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(main_win)
 
     def retranslateUi(self, main_win):
         _translate = QtCore.QCoreApplication.translate
         main_win.setWindowTitle(_translate("main_win", "RedditScraperV2"))
         self.Title.setText(_translate("main_win", "Reddit Scraper - V2"))
-        self.fetch_spinBox.setToolTip(_translate(
-            "main_win", "<html><head/><body><p>Limit of posts to fetch from user and subsequent subreddits</p></body></html>"))
+        self.fetch_spinBox.setToolTip(_translate("main_win", "<html><head/><body><p>Limit of posts to fetch from user and subsequent subreddits</p></body></html>"))
         self.collectBtn.setText(_translate("main_win", "Collect!"))
         self.fetch_label.setText(_translate("main_win", "Fetch Limit:"))
         self.redditor_label.setText(_translate("main_win", "Redditor:"))
-        self.install_location_label.setText(
-            _translate("main_win", "InstallLocation"))
-        self.fetchMax_checkBox.setToolTip(_translate(
-            "main_win", "<html><head/><body><p>Enable the max amount of fetched items</p></body></html>"))
+        self.install_location_label.setText(_translate("main_win", "InstallLocation"))
+        self.fetchMax_checkBox.setToolTip(_translate("main_win", "<html><head/><body><p>Enable the max amount of fetched items</p></body></html>"))
         self.fetchMax_checkBox.setText(_translate("main_win", "Max"))
-        self.seachSubs_checkBox.setText(
-            _translate("main_win", "Search Subreddits"))
+        self.seachSubs_checkBox.setText(_translate("main_win", "Search Subreddits"))
         self.history_checkBox.setText(_translate("main_win", "Load History"))
         self.menuFile.setTitle(_translate("main_win", "File"))
         self.menuEdit.setTitle(_translate("main_win", "Edit"))
         self.menuView.setTitle(_translate("main_win", "View"))
-        self.actionChange_Install_Location.setText(
-            _translate("main_win", "Change Install Location"))
-        self.actionDelete_User_Data.setText(
-            _translate("main_win", "Delete User Data"))
+        self.actionChange_Install_Location.setText(_translate("main_win", "Change Install Location"))
+        self.actionDelete_User_Data.setText(_translate("main_win", "Delete User Data"))
         self.actionOpen_User.setText(_translate("main_win", "Open User Data"))
-        self.actionAdd_Taks_to_Windows_Scheduler.setText(
-            _translate("main_win", "Add Taks to Windows Scheduler"))
+        self.actionAdd_Taks_to_Windows_Scheduler.setText(_translate("main_win", "Add Taks to Windows Scheduler"))
+        self.actionChange_Reddit_Token_Credentials.setText(_translate("main_win", "Change Reddit App Credentials"))
