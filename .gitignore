@@ -3,3 +3,5 @@ praw.ini
 *.ui
 testing.py
 settings.ini
+dist/
+build/

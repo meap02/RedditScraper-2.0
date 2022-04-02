@@ -33,8 +33,9 @@ def collectUser(user_string: str,
                 collection):
     try:
         user = user_exists(user_string)
-    except praw.exceptions.MissingRequiredAttributeException as e:
-        print("The praw.ini file is invalid")
+    except praw.exceptions.MissingRequiredAttributeException and \
+            AttributeError as e:
+        print("The praw.ini file is invalid" + str(e))
         yield("The praw.ini file is invalid,"
               + "please configure the file and restart the application")
         return
