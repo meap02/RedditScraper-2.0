@@ -282,7 +282,11 @@ def deClutter(text):
                          "<"
                          "."
                          "]+", flags=re.UNICODE)
-    return pattern.sub(r'', text).strip()
+    text = pattern.sub(r'', text).strip()
+    if len(text) > 100:
+        return text[0:100]
+    else:
+        return text
 
 
 def checkUserDir(user_path: os.PathLike):
