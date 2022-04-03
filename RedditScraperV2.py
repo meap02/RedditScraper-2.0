@@ -1,5 +1,5 @@
 from RSV2_UI import Ui_main_win
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 import sys
 from collector import collectUser, save
 import configparser
@@ -72,6 +72,12 @@ timeout = 16"""
             self.fetch_spinBox.setValue(int(self.config["APP"]["grab_limit"]))
         else:
             self.install_location_label.setText(os.getcwd())
+        if not os.path.isfile("praw.ini"):
+            try:
+                with open("praw.ini", 'x') as f:
+                    f.write(self.blank_prawini)
+            except:
+                pass
         ############# EVENT CONNECTIONS ############################
         app.aboutToQuit.connect(self.closeEvent)
         self.save_update.connect(self.set_progressbar)

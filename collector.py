@@ -16,7 +16,6 @@ import pickle
 import hashlib
 import os
 import pathlib
-import sys
 
 
 '''
