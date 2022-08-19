@@ -24,14 +24,14 @@ most recent submissions from that subreddit for any more of the user's posts
 '''
 
 
-def collectUser(user_string: str,
-                grab_limit: int,
-                load_history: bool,
-                search_subs: bool,
-                location: str,
-                collection):
+def collectUsr(user_str: str,
+               fetch_limit: int,
+               load_history: bool,
+               search_subs: bool,
+               location: str,
+               collection):
     try:
-        user = user_exists(user_string)
+        user = user_exists(user_str)
     except praw.exceptions.MissingRequiredAttributeException and \
             AttributeError as e:
         print("The praw.ini file is invalid" + str(e))
@@ -40,11 +40,11 @@ def collectUser(user_string: str,
         return
     if user is not None:
         print("Collecting "
-              + str(grab_limit)
+              + str(fetch_limit)
               + " posts from redditor: "
               + user.name)
         yield ("Collecting "
-               + str(grab_limit)
+               + str(fetch_limit)
                + " posts from redditor: "
                + user.name)
         #out = io.StringIO("Collecting posts from " + user.name + "...")
@@ -58,11 +58,11 @@ def collectUser(user_string: str,
             print("\\Redditors creation error" + str(e))
         user_path = user_path / "Redditors" / user.name
     else:
-        print("User \"" + user_string + "\" does not exist")
-        yield("User \"" + user_string + "\" does not exist")
+        print(user_str + " does not exist")
+        yield(user_str + " does not exist")
         return
     root = []
-    for item in user.submissions.new(limit=grab_limit):
+    for item in user.submissions.new(limit=fetch_limit):
         root.append(item)
     if load_history and checkUserDir(user_path):
         print("Loaded previous history...")
@@ -85,12 +85,12 @@ def collectUser(user_string: str,
             print("New subreddit \""
                   + root[i].subreddit.display_name
                   + "\" found, getting newest "
-                  + str(grab_limit) + " posts...")
+                  + str(fetch_limit) + " posts...")
             yield ("New subreddit \""
                    + root[i].subreddit.display_name
                    + "\" found, getting newest "
-                   + str(grab_limit) + " posts...")
-            leaves = root[i].subreddit.new(limit=grab_limit)
+                   + str(fetch_limit) + " posts...")
+            leaves = root[i].subreddit.new(limit=fetch_limit)
             usubs.add(root[i].subreddit.display_name)
             for leaf in leaves:
                 if leaf.author is not None:
@@ -173,25 +173,188 @@ def collectUser(user_string: str,
     return
 
 
-def save(item: praw.models.Submission,
-         user_str: str,
-         location_str: str):
+def collectSub(sub_str: str,
+               fetch_limit: int,
+               load_history: bool,
+               fetch_type: int,
+               location: str,
+               collection):
+    try:
+        sub = sub_exists(sub_str)
+    except praw.exceptions.MissingRequiredAttributeException and \
+            AttributeError as e:
+        print("The praw.ini file is invalid" + str(e))
+        yield("The praw.ini file is invalid,"
+              + "please configure the file and restart the application")
+        return
+    if sub_str is not None:
+        #out = io.StringIO("Collecting posts from " + user.name + "...")
+        sub_path = pathlib.PurePath(location)
+        try:
+            os.mkdir(sub_path / "Subreddits")
+            print("Made " + sub_path.name + "!")
+        except FileExistsError:
+            pass
+        except Exception as e:
+            print("\\Redditors creation error" + str(e))
+        sub_path = sub_path / "Subreddits" / sub.display_name
+    else:
+        print(sub_str + " does not exist")
+        yield(sub_str + " does not exist")
+        return
+    if load_history and checkSubDir(sub_path):
+        print("Loaded previous history...")
+        yield "Loaded previous history..."
+        with open(sub_path / ".uposts.pickle", "rb") as f:
+            uposts = pickle.load(f)
+    else:
+        print("Did not load previous history...")
+        yield "Did not load previous history..."
+        uposts = set()
 
-    user = user_exists(user_str)
-    location = pathlib.PurePath(location_str) / "Redditors"
+    match fetch_type:
+        case 0:
+            print("Collecting the "
+                  + str(fetch_limit)
+                  + " newest posts from the subreddit: "
+                  + sub.display_name)
+            yield ("Collecting the "
+                   + str(fetch_limit)
+                   + " newest posts from the subreddit: "
+                   + sub.display_name)
+            for post in sub.new(limit=fetch_limit):
+                if uposts.isdisjoint({post}):
+                    collection.append(post)
+                    uposts.add(post)
+                    print("The post "
+                          + "https://www.reddit.com" + post.permalink
+                          + " has been added")
+                    yield ("The post "
+                           + "https://www.reddit.com" + post.permalink
+                           + " has been added")
+                else:
+                    print("The post "
+                          + "https://www.reddit.com" + post.permalink
+                          + " is a duplicate")
+                    yield ("The post "
+                           + "https://www.reddit.com" + post.permalink
+                           + " is a duplicate")
+        case 1:
+            print("Collecting the "
+                  + str(fetch_limit)
+                  + " hottest posts from the subreddit: "
+                  + sub.display_name)
+            yield ("Collecting the "
+                   + str(fetch_limit)
+                   + " hottest posts from the subreddit: "
+                   + sub.display_name)
+            for post in sub.hot(limit=fetch_limit):
+                if uposts.isdisjoint({post}):
+                    collection.append(post)
+                    uposts.add(post)
+                    print("The post "
+                          + "https://www.reddit.com" + post.permalink
+                          + " has been added")
+                    yield ("The post "
+                           + "https://www.reddit.com" + post.permalink
+                           + " has been added")
+                else:
+                    print("The post "
+                          + "https://www.reddit.com" + post.permalink
+                          + " is a duplicate")
+                    yield ("The post "
+                           + "https://www.reddit.com" + post.permalink
+                           + " is a duplicate")
+        case 2:
+            print("Collecting the "
+                  + str(fetch_limit)
+                  + " top posts from the subreddit: "
+                  + sub.display_name)
+            yield ("Collecting the "
+                   + str(fetch_limit)
+                   + " top posts from the subreddit: "
+                   + sub.display_name)
+            for post in sub.top(limit=fetch_limit):
+                if uposts.isdisjoint({post}):
+                    collection.append(post)
+                    uposts.add(post)
+                    print("The post "
+                          + "https://www.reddit.com" + post.permalink
+                          + " has been added")
+                    yield ("The post "
+                           + "https://www.reddit.com" + post.permalink
+                           + " has been added")
+                else:
+                    print("The post "
+                          + "https://www.reddit.com" + post.permalink
+                          + " is a duplicate")
+                    yield ("The post "
+                           + "https://www.reddit.com" + post.permalink
+                           + " is a duplicate")
+        case 3:
+            print("Collecting the "
+                  + str(fetch_limit)
+                  + " most controversial posts from the subreddit: "
+                  + sub.display_name)
+            yield ("Collecting the "
+                   + str(fetch_limit)
+                   + " most controversial posts from the subreddit: "
+                   + sub.display_name)
+            for post in sub.controversial(limit=fetch_limit):
+                if uposts.isdisjoint({post}):
+                    collection.append(post)
+                    uposts.add(post)
+                    print("The post "
+                          + "https://www.reddit.com" + post.permalink
+                          + " has been added")
+                    yield ("The post "
+                           + "https://www.reddit.com" + post.permalink
+                           + " has been added")
+                else:
+                    print("The post "
+                          + "https://www.reddit.com" + post.permalink
+                          + " is a duplicate")
+                    yield ("The post "
+                           + "https://www.reddit.com" + post.permalink
+                           + " is a duplicate")
+    print("Finished scanning " + sub.display_name)
+    yield ("Finished scanning " + sub.display_name)
+    if load_history:
+        with open(".uposts.pickle", "wb") as f:
+            pickle.dump(uposts, f)
+    return collection
+
+
+def save(item: praw.models.Submission,
+         part_str: str,
+         location_str: str,
+         content: str):
+
+    location = pathlib.PurePath(location_str) / content
+    if content == "Redditors":
+        part = user_exists(part_str)
+        location = location / part.name
+    else:
+        part = sub_exists(part_str)
+        location = location / part.display_name
     try:
         os.mkdir(location)
     except FileExistsError:
         pass
-    location = location / user.name
     name = str(str(datetime.fromtimestamp(item.created_utc))[0:10]
                + "_" + deClutter(item.title))
     print("Saving " + name + "...")
     yield ("Saving " + name + "...")
     ############################ TEXT #################################
     if "https://www.reddit.com" + item.permalink == item.url:
-        print("This is a text post, will implement later...")
-        yield "This is a text post, will implement later..."
+        try:
+            with open(location / "text" / (item.title + ".txt")) as f:
+                f.write(item.title + " by: " + item.author
+                        + "\n" + item.selftext)
+        except:
+            print("There was an error writing " + item.url + " to a text file")
+            yield("There was an error writing " + item.url + " to a text file")
+
     ############################ .gifv LINKS #################################
     elif re.search("\.gifv", item.url):
         try:
@@ -219,6 +382,32 @@ def save(item: praw.models.Submission,
                   + item.url + ": " + str(e))
             yield("An unknown error has occured while processing "
                   + item.url + ": " + str(e))
+    ############################ IMAGE GALLERIES ##############################
+    elif re.search("www\.reddit\.com/gallery", item.url):
+        try:
+            for i, n in zip(item.media_metadata.items(),
+
+                            range(len(item.media_metadata.items()))):
+                url = i[1]['p'][0]['u']
+                url = url.split("?")[0].replace("preview", "i")
+                open(location / "pictures" / (name + "_" + str(n)
+                                              + re.search("\.[^.\\/]+$",
+                                                          url).group()),
+                     'wb').write(requests.get(url).content)
+        except ConnectionError:
+            print("The link at " + item.url + " was not resolvable")
+            yield("The link at " + item.url + " was not resolvable")
+        except TypeError as e:
+            print("The picture was not able to be found within "
+                  + item.url + str(e))
+            yield("The picture was not able to be found within "
+                  + item.url + str(e))
+        except Exception as e:
+            print("An unknown error has occured while processing "
+                  + item.url + ": " + str(e))
+            yield("An unknown error has occured while processing "
+                  + item.url + ": " + str(e))
+
     ############################ IMAGES ###############################
     elif(re.search("i\.redd\.it|/i\.imgur\.com/", item.url)):
         try:
@@ -324,6 +513,53 @@ def checkUserDir(user_path: os.PathLike):
     return True
 
 
+def checkSubDir(sub_path: os.PathLike):
+    try:
+        os.mkdir(sub_path)
+        print("Made " + sub_path.name + "!")
+    except FileExistsError:
+        pass
+    except Exception as e:
+        print("\\sub_path creation error" + str(e))
+
+    try:
+        os.mkdir(sub_path / "pictures")
+        print("Made \\pictures!")
+    except FileExistsError:
+        pass
+    except Exception as e:
+        print("\\pictures creation error" + str(e))
+
+    try:
+        os.mkdir(sub_path / "videos")
+        print("Made \\videos!")
+    except FileExistsError:
+        pass
+    except Exception as e:
+        print("\\videos creation error" + str(e))
+
+    try:
+        os.mkdir(sub_path / "text")
+        print("Made \\text!")
+    except FileExistsError:
+        pass
+    except Exception as e:
+        print("\\text creation error" + str(e))
+
+    try:
+        open(sub_path / "log.txt", "x").close()
+    except OSError:
+        pass
+
+    try:
+        with open(sub_path / ".uposts.pickle", "xb") as f:
+            pickle.dump(set(), f)
+    except OSError:
+        pass
+
+    return True
+
+
 def user_exists(name):
     try:
         user = praw.Reddit().redditor(name)
@@ -334,9 +570,19 @@ def user_exists(name):
     return user
 
 
+def sub_exists(name):
+    try:
+        sub = praw.Reddit().subreddit(name)
+        sub.id
+    except prawcore.exceptions.NotFound as e:
+        return None
+        print(e)
+    return sub
+
+
 if __name__ == "__main__":
     beep = []
     print("Running module as script...")
-    for y in collectUser("Your_submissive_doll", 10, False, False,
-                         "X:\Personal\Coding\Python\RedditScraper 2.0", beep):
+    for y in collectUsr("Your_submissive_doll", 10, False, False,
+                        "X:\Personal\Coding\Python\RedditScraper 2.0", beep):
         print(y)

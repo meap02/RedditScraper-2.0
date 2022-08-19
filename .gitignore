@@ -1,7 +1,8 @@
 Redditors/
-praw.ini
-*.ui
-testing.py
-settings.ini
 dist/
 build/
+Subreddits/
+*.ui
+*.ini
+testing.py
+*.json
