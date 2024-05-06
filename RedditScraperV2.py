@@ -60,22 +60,26 @@ timeout = 16"""
         print("Setting up attatched UI...")
         QtCore.QObject.__init__(self)
         self.setupUi(window)
-        if(os.path.isfile("settings.ini")):
+        if os.path.isfile("settings.ini"):
             self.config = None
-            with open("settings.ini", 'r') as f:
+            with open("settings.ini", "r") as f:
                 self.config = configparser.ConfigParser()
                 self.config.read_file(f)
             self.install_location_label.setText(
-                self.config["SETUP"]["install_location"])
+                self.config["SETUP"]["install_location"]
+            )
             self.input_plainTextEdit.setPlainText(self.config["APP"]["input"])
             self.history_checkBox.setChecked(
-                eval(self.config["APP"]["load_history"]))
+                eval(self.config["APP"]["load_history"])
+            )
             self.seachSubs_checkBox.setChecked(
-                eval(self.config["APP"]["search_subreddits"]))
+                eval(self.config["APP"]["search_subreddits"])
+            )
             self.fetch_spinBox.setValue(int(self.config["APP"]["grab_limit"]))
             self.content_comboBox.setCurrentIndex(
-                int(self.config["APP"]["content_index"]))
-            if self.config["APP"]["content_index"] == '1':
+                int(self.config["APP"]["content_index"])
+            )
+            if self.config["APP"]["content_index"] == "1":
                 self.seachSubs_checkBox.hide()
                 self.fetchtype_comboBox.show()
             else:
@@ -85,39 +89,42 @@ timeout = 16"""
             self.install_location_label.setText(os.getcwd())
         if not os.path.isfile("praw.ini"):
             try:
-                with open("praw.ini", 'x') as f:
+                with open("praw.ini", "x") as f:
                     f.write(self.blank_prawini)
             except:
                 pass
-
-        ###############
-        for name in os.listdir(self.config["SETUP"]["install_location"]
-                               + "\\Redditors"):
+            ###############
+        for name in os.listdir(
+            self.config["SETUP"]["install_location"] + "\\Redditors"
+        ):
             self.usr_list.append(name)
-
-        for name in os.listdir(self.config["SETUP"]["install_location"]
-                               + "\\Subreddits"):
+        for name in os.listdir(
+            self.config["SETUP"]["install_location"] + "\\Subreddits"
+        ):
             self.sub_list.append(name)
-        if (self.content_comboBox.currentIndex() == 1):  # When Subreddit
+        if self.content_comboBox.currentIndex() == 1:  # When Subreddit
             self.input_comboBox.addItems(self.sub_list)
-        else:
+        else:  # When Redditor
             self.input_comboBox.addItems(self.usr_list)
 
-        ################
         ############# EVENT CONNECTIONS ############################
         app.aboutToQuit.connect(self.closeEvent)
         self.save_update.connect(self.set_progressbar)
         self.update.connect(self.update_out)
         self.disable.connect(self.disable_ui)
-        self.content_comboBox.currentIndexChanged['int'].connect(
-            self.content_change)
+        self.content_comboBox.currentIndexChanged["int"].connect(
+            self.content_change
+        )
         self.collectBtn.clicked.connect(self.safe_collect)
         self.actionChange_Reddit_Token_Credentials.triggered.connect(
-            self.cred_subwindow)
+            self.cred_subwindow
+        )
         self.actionChange_Install_Location.triggered.connect(
-            self.change_install)
+            self.change_install
+        )
         self.actionAdd_Taks_to_Windows_Scheduler.triggered.connect(
-            self.auto_subwindow)
+            self.auto_subwindow
+        )
         main_win.show()
 
     def content_change(self, item):
@@ -126,7 +133,7 @@ timeout = 16"""
             self.fetchtype_comboBox.show()
             self.input_comboBox.clear()
             self.input_comboBox.addItems(self.sub_list)
-        else:   # When Redditor is chosen
+        else:  # When Redditor is chosen
             self.seachSubs_checkBox.show()
             self.fetchtype_comboBox.hide()
             self.input_comboBox.clear()
@@ -141,35 +148,48 @@ timeout = 16"""
     def collect(self):
         self.save_update.emit(0, 0)
         collection = []
+        if self.input_tabWidget.currentIndex() == 1:
+            input = self.input_comboBox.currentText()
+        else:
+            input = str(self.input_plainTextEdit.toPlainText())
 
         if self.content_comboBox.currentIndex() == 1:
-            for y in collectSub(self.input_plainTextEdit.toPlainText(),
-                                1000 if self.fetchMax_checkBox.isChecked() else
-                                self.fetch_spinBox.value(),
-                                self.history_checkBox.isChecked(),
-                                self.fetchtype_comboBox.currentIndex(),
-                                self.install_location_label.text(),
-                                collection):
+            for y in collectSub(
+                input,
+                (
+                    1000
+                    if self.fetchMax_checkBox.isChecked()
+                    else self.fetch_spinBox.value()
+                ),
+                self.history_checkBox.isChecked(),
+                self.fetchtype_comboBox.currentIndex(),
+                self.install_location_label.text(),
+                collection,
+            ):
                 self.update.emit(y)
                 content = "Subreddits"
         else:
-            for y in collectUsr(self.input_plainTextEdit.toPlainText(),
-                                1000 if self.fetchMax_checkBox.isChecked() else
-                                self.fetch_spinBox.value(),
-                                self.history_checkBox.isChecked(),
-                                self.seachSubs_checkBox.isChecked(),
-                                self.install_location_label.text(),
-                                collection):
+            for y in collectUsr(
+                input,
+                (
+                    1000
+                    if self.fetchMax_checkBox.isChecked()
+                    else self.fetch_spinBox.value()
+                ),
+                self.history_checkBox.isChecked(),
+                self.seachSubs_checkBox.isChecked(),
+                self.install_location_label.text(),
+                collection,
+            ):
                 self.update.emit(y)
                 content = "Redditors"
 
         max = len(collection)
         self.save_update.emit(0, max)
         for i, post in zip(range(0, max), collection):
-            for y in save(post,
-                          self.input_plainTextEdit.toPlainText(),
-                          self.install_location_label.text(),
-                          content):
+            for y in save(
+                post, input, self.install_location_label.text(), content
+            ):
                 self.update.emit(y)
             self.save_update.emit(i, max)
         self.save_update.emit(0, 1)
@@ -181,7 +201,7 @@ timeout = 16"""
         if value > max:
             self.saving_progressBar.reset()
             return
-        if(self.saving_progressBar.maximum() != max):
+        if self.saving_progressBar.maximum() != max:
             self.saving_progressBar.setRange(0, max)
         self.saving_progressBar.setValue(value)
 
@@ -191,7 +211,7 @@ timeout = 16"""
         new = filedialog.askdirectory()
         self.install_location_label.setText(new)
         self.config.set("SETUP", "install_location", new)
-        with open('settings.ini', 'w') as f:
+        with open("settings.ini", "w") as f:
             self.config.write(f)
 
     def update_out(self, out):
@@ -204,11 +224,15 @@ timeout = 16"""
         self.fetchMax_checkBox.setDisabled(boolean)
         self.history_checkBox.setDisabled(boolean)
         self.seachSubs_checkBox.setDisabled(boolean)
+        self.input_tabWidget.setDisabled(boolean)
+        self.content_comboBox.setDisabled(boolean)
+        self.fetch_label.setDisabled(boolean)
+        # self.button_grid.setEnabled(boolean)
 
     ####SUBWINOWS####################
 
     def cred_subwindow(self):
-        with open("praw.ini", 'r') as f:
+        with open("praw.ini", "r") as f:
             prawini = configparser.ConfigParser()
             prawini.read_file(f)
         self.cred_sw = subwindow()
@@ -233,21 +257,26 @@ timeout = 16"""
         self.useragent_plainTextEdit.setMaximumSize(QtCore.QSize(16777215, 23))
         self.useragent_plainTextEdit.setObjectName("useragent_plainTextEdit")
         self.useragent_plainTextEdit.setPlainText(
-            prawini["DEFAULT"]["user_agent"])
+            prawini["DEFAULT"]["user_agent"]
+        )
         self.gridLayout.addWidget(self.useragent_plainTextEdit, 2, 1, 1, 1)
         self.clientid_plainTextEdit = QtWidgets.QPlainTextEdit(self.widget)
         self.clientid_plainTextEdit.setMaximumSize(QtCore.QSize(16777215, 23))
         self.clientid_plainTextEdit.setObjectName("clientid_plainTextEdit")
         self.clientid_plainTextEdit.setPlainText(
-            prawini["DEFAULT"]["client_id"])
+            prawini["DEFAULT"]["client_id"]
+        )
         self.gridLayout.addWidget(self.clientid_plainTextEdit, 0, 1, 1, 1)
         self.clientsecret_plainTextEdit = QtWidgets.QPlainTextEdit(self.widget)
         self.clientsecret_plainTextEdit.setMaximumSize(
-            QtCore.QSize(16777215, 23))
+            QtCore.QSize(16777215, 23)
+        )
         self.clientsecret_plainTextEdit.setObjectName(
-            "clientsecret_plainTextEdit")
+            "clientsecret_plainTextEdit"
+        )
         self.clientsecret_plainTextEdit.setPlainText(
-            prawini["DEFAULT"]["client_secret"])
+            prawini["DEFAULT"]["client_secret"]
+        )
         self.gridLayout.addWidget(self.clientsecret_plainTextEdit, 1, 1, 1, 1)
         self.clientsecret_label = QtWidgets.QLabel(self.widget)
         self.clientsecret_label.setObjectName("clientsecret_label")
@@ -256,12 +285,14 @@ timeout = 16"""
         self.clientid_label.setObjectName("clientid_label")
         self.gridLayout.addWidget(self.clientid_label, 0, 0, 1, 1)
         _translate = QtCore.QCoreApplication.translate
-        self.cred_sw.setWindowTitle(_translate(
-            "cred_sw", "Reddit App Credentials"))
+        self.cred_sw.setWindowTitle(
+            _translate("cred_sw", "Reddit App Credentials")
+        )
         self.create_pushButton.setText(_translate("cred_sw", "Create"))
         self.useragent_label.setText(_translate("cred_sw", "User Agent:"))
         self.clientsecret_label.setText(
-            _translate("cred_sw", "Client Secret:"))
+            _translate("cred_sw", "Client Secret:")
+        )
         self.clientid_label.setText(_translate("cred_sw", "Client ID:"))
         self.create_pushButton.clicked.connect(self.create_prawini)
         QtCore.QMetaObject.connectSlotsByName(self.cred_sw)
@@ -344,101 +375,144 @@ timeout = 16"""
         self.createauto_pushButton.setGeometry(QtCore.QRect(180, 150, 75, 23))
         self.createauto_pushButton.setObjectName("createauto_pushButton")
         _translate = QtCore.QCoreApplication.translate
-        self.auto_sw.setWindowTitle(_translate(
-            "self.auto_sw", "Auto-Collector Setup"))
+        self.auto_sw.setWindowTitle(
+            _translate("self.auto_sw", "Auto-Collector Setup")
+        )
         self.target_comboBox.setItemText(
-            0, _translate("self.auto_sw", "user1"))
+            0, _translate("self.auto_sw", "user1")
+        )
         self.target_comboBox.setItemText(
-            1, _translate("self.auto_sw", "user2"))
-        self.hourly_label.setText(_translate(
-            "self.auto_sw", "Minute on the hour:"))
-        self.freqency_tabWidget.setTabText(self.freqency_tabWidget.indexOf(
-            self.hourly_tab), _translate("self.auto_sw", "Hourly"))
-        self.daily_label.setText(_translate(
-            "self.auto_sw", "Time on the day:"))
-        self.freqency_tabWidget.setTabText(self.freqency_tabWidget.indexOf(
-            self.daily_tab), _translate("self.auto_sw", "Daily"))
+            1, _translate("self.auto_sw", "user2")
+        )
+        self.hourly_label.setText(
+            _translate("self.auto_sw", "Minute on the hour:")
+        )
+        self.freqency_tabWidget.setTabText(
+            self.freqency_tabWidget.indexOf(self.hourly_tab),
+            _translate("self.auto_sw", "Hourly"),
+        )
+        self.daily_label.setText(
+            _translate("self.auto_sw", "Time on the day:")
+        )
+        self.freqency_tabWidget.setTabText(
+            self.freqency_tabWidget.indexOf(self.daily_tab),
+            _translate("self.auto_sw", "Daily"),
+        )
         self.weekly_comboBox.setItemText(
-            0, _translate("self.auto_sw", "Sunday"))
+            0, _translate("self.auto_sw", "Sunday")
+        )
         self.weekly_comboBox.setItemText(
-            1, _translate("self.auto_sw", "Monday"))
+            1, _translate("self.auto_sw", "Monday")
+        )
         self.weekly_comboBox.setItemText(
-            2, _translate("self.auto_sw", "Tuesday"))
+            2, _translate("self.auto_sw", "Tuesday")
+        )
         self.weekly_comboBox.setItemText(
-            3, _translate("self.auto_sw", "Wednesday"))
+            3, _translate("self.auto_sw", "Wednesday")
+        )
         self.weekly_comboBox.setItemText(
-            4, _translate("self.auto_sw", "Thursday"))
+            4, _translate("self.auto_sw", "Thursday")
+        )
         self.weekly_comboBox.setItemText(
-            5, _translate("self.auto_sw", "Friday"))
+            5, _translate("self.auto_sw", "Friday")
+        )
         self.weekly_comboBox.setItemText(
-            6, _translate("self.auto_sw", "Saturday"))
+            6, _translate("self.auto_sw", "Saturday")
+        )
         self.weekly_day_label.setText(
-            _translate("self.auto_sw", "Day of the week:"))
+            _translate("self.auto_sw", "Day of the week:")
+        )
         self.weekly_time_label.setText(
-            _translate("self.auto_sw", "Time on the day:"))
-        self.freqency_tabWidget.setTabText(self.freqency_tabWidget.indexOf(
-            self.weekly_tab), _translate("self.auto_sw", "Weekly"))
+            _translate("self.auto_sw", "Time on the day:")
+        )
+        self.freqency_tabWidget.setTabText(
+            self.freqency_tabWidget.indexOf(self.weekly_tab),
+            _translate("self.auto_sw", "Weekly"),
+        )
         self.monthly_day_label.setText(
-            _translate("self.auto_sw", "Day of the month:"))
+            _translate("self.auto_sw", "Day of the month:")
+        )
         self.monthly_time_label.setText(
-            _translate("self.auto_sw", "Time on the day:"))
-        self.freqency_tabWidget.setTabText(self.freqency_tabWidget.indexOf(
-            self.monthly_tab), _translate("self.auto_sw", "Monthly"))
+            _translate("self.auto_sw", "Time on the day:")
+        )
+        self.freqency_tabWidget.setTabText(
+            self.freqency_tabWidget.indexOf(self.monthly_tab),
+            _translate("self.auto_sw", "Monthly"),
+        )
         self.createauto_pushButton.setText(
-            _translate("self.auto_sw", "Create"))
+            _translate("self.auto_sw", "Create")
+        )
         self.freqency_tabWidget.setCurrentIndex(3)
         QtCore.QMetaObject.connectSlotsByName(self.auto_sw)
+        ## YOU ARE HERE CREATE TASK SCEDULAER INTEGRATION
         self.auto_sw.show()
 
     def create_prawini(self):
         try:
-            with open(self.install_location_label.text()
-                      + "\\praw.ini", "x") as f:
+            with open(
+                self.install_location_label.text() + "\\praw.ini", "x"
+            ) as f:
                 f.write(self.blank_prawini)
         except OSError:
             print("praw.ini already exists!")
             pass
-        with open("praw.ini", 'r') as f:
+        with open("praw.ini", "r") as f:
             prawini = configparser.ConfigParser()
             prawini.read_file(f)
-            prawini.set("DEFAULT", "client_id",
-                        self.clientid_plainTextEdit.toPlainText())
-            prawini.set("DEFAULT", "client_secret",
-                        self.clientsecret_plainTextEdit.toPlainText())
-            prawini.set("DEFAULT", "user_agent",
-                        self.useragent_plainTextEdit.toPlainText())
-        with open('praw.ini', 'w') as f:
+            prawini.set(
+                "DEFAULT",
+                "client_id",
+                self.clientid_plainTextEdit.toPlainText(),
+            )
+            prawini.set(
+                "DEFAULT",
+                "client_secret",
+                self.clientsecret_plainTextEdit.toPlainText(),
+            )
+            prawini.set(
+                "DEFAULT",
+                "user_agent",
+                self.useragent_plainTextEdit.toPlainText(),
+            )
+        with open("praw.ini", "w") as f:
             prawini.write(f)
         self.cred_sw.close()
 
     def closeEvent(self):
         try:
-            with open(self.install_location_label.text()
-                      + "\\settings.ini", "x") as f:
+            with open(
+                self.install_location_label.text() + "\\settings.ini", "x"
+            ) as f:
                 f.write(self.blank_config)
-            with open("settings.ini", 'r') as f:
+            with open("settings.ini", "r") as f:
                 self.config = configparser.ConfigParser()
                 self.config.read_file(f)
         except OSError:
             pass
         self.config.set("APP", "grab_limit", str(self.fetch_spinBox.value()))
-        self.config.set("APP", "load_history",
-                        str(self.history_checkBox.isChecked()))
-        self.config.set("APP", "search_subreddits",
-                        str(self.seachSubs_checkBox.isChecked()))
-        self.config.set("APP", "input",
-                        self.input_plainTextEdit.toPlainText())
-        self.config.set("APP", "content_index",
-                        str(self.content_comboBox.currentIndex()))
-        self.config.set("SETUP", "install_location",
-                        self.install_location_label.text())
-        with open('settings.ini', 'w') as f:
+        self.config.set(
+            "APP", "load_history", str(self.history_checkBox.isChecked())
+        )
+        self.config.set(
+            "APP",
+            "search_subreddits",
+            str(self.seachSubs_checkBox.isChecked()),
+        )
+        self.config.set("APP", "input", input)
+        self.config.set(
+            "APP", "content_index", str(self.content_comboBox.currentIndex())
+        )
+        self.config.set(
+            "SETUP", "install_location", self.install_location_label.text()
+        )
+        with open("settings.ini", "w") as f:
             self.config.write(f)
         with open("list.json", "w") as f:
             json.dump([self.usr_list, self.sub_list], f)
         for thread in self.manager:
             thread.stop()
-        print('Close button pressed')
+        print("Close button pressed")
+
     #    sys.exit(0)
 
 

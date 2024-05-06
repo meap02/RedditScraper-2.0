@@ -6,3 +6,5 @@ Subreddits/
 *.ini
 testing.py
 *.json
+debug/
+__pycache__/
